@@ -1,0 +1,4 @@
+rootProject.name = 'Ceng453_TermProject_Group15'
+include 'AlienShooter_Server'
+findProject(':AlienShooter_Server')?.name = 'Ceng453_TermProject_Group15'
+

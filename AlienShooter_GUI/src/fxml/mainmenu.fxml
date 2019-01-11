@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.GaussianBlur?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="stack_pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controllers.Mainmenu">
+   <children>
+      <ImageView fitHeight="512.0" fitWidth="768.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/space.png" />
+         </image>
+         <effect>
+            <Glow level="0.73">
+               <input>
+                  <GaussianBlur radius="5.39" />
+               </input>
+            </Glow>
+         </effect>
+         <viewport>
+            <Rectangle2D />
+         </viewport>
+      </ImageView>
+      <AnchorPane fx:id="anchor_pane" prefHeight="501.0" prefWidth="600.0">
+         <children>
+            <Circle fx:id="ball1" fill="#1fffe9" layoutX="408.0" layoutY="281.0" radius="40.0" stroke="BLACK" strokeType="INSIDE">
+               <effect>
+                  <GaussianBlur radius="63.0" />
+               </effect>
+            </Circle>
+            <Circle fx:id="ball2" fill="RED" layoutX="340.0" layoutY="81.0" radius="40.0" stroke="BLACK" strokeType="INSIDE">
+               <effect>
+                  <GaussianBlur radius="63.0" />
+               </effect>
+            </Circle>
+          <Button fx:id="start_playing" layoutY="141.0" mnemonicParsing="false" onAction="#start_playing" prefHeight="39.0" prefWidth="200.0" styleClass="rich-blue" stylesheets="@../styles/button_styles.css" text="Start Playing" />
+          <Button fx:id="weekly_leaderboard" layoutY="201.0" mnemonicParsing="false" onAction="#weekly_leaderboard" prefHeight="39.0" prefWidth="200.0" styleClass="rich-blue" stylesheets="@../styles/button_styles.css" text="Weekly Leaderboard" />
+          <Button fx:id="alltime_leaderboard" layoutY="260.0" mnemonicParsing="false" onAction="#alltime_leaderboard" prefHeight="39.0" prefWidth="200.0" styleClass="rich-blue" stylesheets="@../styles/button_styles.css" text="All Time Leaderboard" />
+            <Label fx:id="welcome" layoutX="260.0" layoutY="202.0" prefHeight="38.0" prefWidth="345.0" textAlignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="21.0" />
+               </font>
+            </Label>
+            <Label layoutX="52.0" layoutY="9.0" prefHeight="64.0" prefWidth="496.0" text="ALIEN SHOOTER TERM PROJECT">
+               <font>
+                  <Font name="DejaVu Serif Bold" size="25.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="com.alienshooter.Ceng453_TermProject_Group15.main" target="1.10" />
+      <module name="com.alienshooter.Ceng453_TermProject_Group15.test" target="1.10" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

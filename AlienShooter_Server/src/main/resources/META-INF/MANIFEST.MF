@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Class-Path: out/production/classes/com/alienshooter/Ceng453_TermProjec
+ t_Group15/Ceng453TermProjectGroup15Application.class
+Main-Class: com.alienshooter.Ceng453_TermProject_Group15.Ceng453TermProjectGroup15Application
+

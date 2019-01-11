@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="AlienShooter_GUI">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/AlienShooter_GUI.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
