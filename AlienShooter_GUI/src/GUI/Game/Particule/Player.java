@@ -63,6 +63,19 @@ public class Player extends Live_Being {
         setCenterY(GameValues.Player_Spawn_CenterY);
     }
 
+    public Player(double centerX, double centerY) {
+
+
+        super(GameValues.Player_MaxHealth,GameValues.Player_Radius);
+        super.setCurhealth(GameValues.Player_MaxHealth);
+
+        super.setFill(GameValues.Player_Colour);
+
+        setCenterX(centerX);
+        setCenterY(centerY);
+
+    }
+
     public void move_set(int direction) {
 
         //left movement

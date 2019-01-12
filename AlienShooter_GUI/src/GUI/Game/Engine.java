@@ -27,10 +27,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -79,26 +76,37 @@ public class Engine {
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
 
+    private int playerno = 0;
+
+    private Socket player_socket;
+
     private boolean isGameNotFinished = true;
 
 
-    void initialize_sender_receiver_threads() {
+    private void initialize_sender_receiver_threads() {
 
 
         try {
-            Socket socket = new Socket(MultiplayerConstants.host,MultiplayerConstants.server_port);
-            fromServer = new ObjectInputStream(socket.getInputStream());
-            toServer = new ObjectOutputStream(socket.getOutputStream());
 
-            System.out.println("dsadsa");
+            player_socket = new Socket(MultiplayerConstants.host,MultiplayerConstants.server_port);
 
+            fromServer = new ObjectInputStream(player_socket.getInputStream());
+            toServer = new ObjectOutputStream(player_socket.getOutputStream());
 
+            System.out.println("ssssssss");
             //wait for server to initiate gme
-            //fromServer.readInt();
+            playerno = fromServer.readInt();
+            System.out.println("asd");
+            System.out.println(playerno);
+            System.out.println("dsa");
+
+
+
         } catch (IOException e) {
 
             e.printStackTrace();
         }
+
 
         new Thread(() -> {
 
@@ -129,8 +137,6 @@ public class Engine {
                 e.printStackTrace();
             }
         }).start();
-
-        System.out.println("asdas");
 
     }
 
@@ -263,7 +269,6 @@ public class Engine {
         game_music.setCycleCount(MediaPlayer.INDEFINITE);
         game_music.play();
 
-        System.out.println(game_music.isMute());
 
         game_music.setVolume(30);
 
@@ -433,7 +438,6 @@ public class Engine {
                         request.setEntity(entity);
                         request2.setEntity(entity);
 
-                        System.out.println(obj);
                         try {
                             httpClient.execute(request2);
                             httpClient.execute(request);
