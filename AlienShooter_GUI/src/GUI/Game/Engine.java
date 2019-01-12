@@ -65,6 +65,7 @@ public class Engine {
     //Particule list that will be removed soon
     private ArrayList<Particule> particules_removed = new ArrayList<>();
 
+
     public Engine() {
 
         primestage.setTitle("ALIEN SHOOTER");
@@ -176,18 +177,22 @@ public class Engine {
         }
         else if(level == 4) {
 
-            /**for(int i=0;i<GameValues.Level4_Plekumat_No;i++) {
+            /*for(int i=0;i<GameValues.Level4_Plekumat_No;i++) {
                 initially_added_aliens_per_level.add(new Plekumat());
             }
             for(int i=0;i<GameValues.Level4_BossPlekumat_No;i++) {
                 initially_added_aliens_per_level.add(new Boss_Plekumat());
-            } **/
+            } */
 
             return 1;
         }
 
         game_music.setCycleCount(MediaPlayer.INDEFINITE);
         game_music.play();
+
+        System.out.println(game_music.isMute());
+
+        game_music.setVolume(30);
 
         timeline_setup(level);
 

@@ -21,10 +21,10 @@ public class GameValues {
 
 
     //Paths of images for levels
-    public static String Level1_GamePane_Image_Path = "/Game_Images/space7.jpg";
-    public static String Level2_GamePane_Image_Path = "/Game_Images/space4.jpg";
-    public static String Level3_GamePane_Image_Path = "/Game_Images/space11.jpg";
-    public static String Level4_GamePane_Image_Path = "/Game_Images/space10.jpg";
+    public static String Level1_GamePane_Image_Path = "GUI/Game/Game_Images/space7.jpg";
+    public static String Level2_GamePane_Image_Path = "GUI/Game/Game_Images/space4.jpg";
+    public static String Level3_GamePane_Image_Path = "GUI/Game/Game_Images/space11.jpg";
+    public static String Level4_GamePane_Image_Path = "GUI/Game/Game_Images/space10.jpg";
 
 
     //Values of Game_Pane
@@ -33,8 +33,8 @@ public class GameValues {
 
 
     //Paths of sound files
-    public static String Game_Sound_Path = "Game_Sounds/gora_anthem.mp3";
-    public static String Game_LoseSound_Path = "Game_Sounds/commander_logar_speech.mp3";
+    public static String Game_Sound_Path = "GUI/Game/Game_Sounds/game_music1.mp3";
+    public static String Game_LoseSound_Path = "GUI/Game/Game_Sounds/commander_logar_speech1.mp3";
 
     //Fade Transition time in miliseconds
     public static int Fade_Scene_Trans_Time = 6000;
