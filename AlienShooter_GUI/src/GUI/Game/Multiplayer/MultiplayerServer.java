@@ -40,17 +40,17 @@ public class MultiplayerServer extends Application {
                     System.out.println("Player1 has joined");
 
 
-                    new DataOutputStream(
+                    /*new DataOutputStream(
                             player1.getOutputStream()
-                    ).writeInt(MultiplayerConstants.PLAYER1);
+                    ).writeInt(MultiplayerConstants.PLAYER1); */
 
                     Socket player2 = serverSocket.accept();
 
                     System.out.println("Player2 has joined");
 
-                    new DataOutputStream(
+                    /*new DataOutputStream(
                             player2.getOutputStream()
-                    ).writeInt(MultiplayerConstants.PLAYER2);
+                    ).writeInt(MultiplayerConstants.PLAYER2); */
 
                     System.out.println("New game is starting between these two players...");
 

@@ -1,5 +1,7 @@
 package GUI.Game;
 
+import GUI.Game.Multiplayer.MultiplayerConstants;
+import GUI.Game.Multiplayer.Peer2PeerMessage;
 import GUI.Game.Particule.*;
 import GUI.GameValues;
 import GUI.ScoreboardUser.User;
@@ -24,7 +26,12 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
+
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,6 +48,7 @@ public class Engine {
     private Timeline game_timeline;
     private Timeline plekumat_fire;
     private Timeline boss_plekumat_fire;
+    private Timeline multiplayer_timeline;
 
     private IntegerProperty score = new SimpleIntegerProperty(0);
 
@@ -65,12 +73,73 @@ public class Engine {
     //Particule list that will be removed soon
     private ArrayList<Particule> particules_removed = new ArrayList<>();
 
+    private ArrayList<Peer2PeerMessage> messages_to_send = new ArrayList<>();
+    private ArrayList<Peer2PeerMessage> messages_received = new ArrayList<>();
+
+    private ObjectInputStream fromServer;
+    private ObjectOutputStream toServer;
+
+    private boolean isGameNotFinished = true;
+
+
+    void initialize_sender_receiver_threads() {
+
+
+        try {
+            Socket socket = new Socket(MultiplayerConstants.host,MultiplayerConstants.server_port);
+            fromServer = new ObjectInputStream(socket.getInputStream());
+            toServer = new ObjectOutputStream(socket.getOutputStream());
+
+            System.out.println("dsadsa");
+
+
+            //wait for server to initiate gme
+            //fromServer.readInt();
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+
+        new Thread(() -> {
+
+            try {
+
+                while(isGameNotFinished) {
+                    if(!messages_to_send.isEmpty()) {
+                        toServer.writeObject(messages_to_send.get(0));
+                        messages_to_send.remove(0);
+                    }
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }).start();
+
+        new Thread(() -> {
+
+            try {
+                while(isGameNotFinished) {
+                    Peer2PeerMessage message = (Peer2PeerMessage) fromServer.readObject();
+                    messages_received.add(message);
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        System.out.println("asdas");
+
+    }
+
 
     public Engine() {
 
         primestage.setTitle("ALIEN SHOOTER");
 
-        Initialize_Level(1);
+        Initialize_Level(4);
 
         primestage.setResizable(false);
 
@@ -183,6 +252,10 @@ public class Engine {
             for(int i=0;i<GameValues.Level4_BossPlekumat_No;i++) {
                 initially_added_aliens_per_level.add(new Boss_Plekumat());
             } */
+
+            initialize_sender_receiver_threads();
+
+            multiplayer_timeline_setup(level);
 
             return 1;
         }
@@ -558,6 +631,21 @@ public class Engine {
     }
 
     private void multiplayer_timeline_setup(int level) {
+
+        multiplayer_timeline = new Timeline(new KeyFrame(Duration.millis(GameValues.Game_Timeline_Duration), event -> {
+
+            try {
+                for (Particule particule : particules) {
+                    particule.todo();
+
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }));
+        multiplayer_timeline.setCycleCount(Timeline.INDEFINITE);
+        multiplayer_timeline.play();
 
 
 

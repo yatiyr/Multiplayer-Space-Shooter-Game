@@ -149,6 +149,10 @@ public class GameValues {
     public static double drag_change_rate = 0.03;
     public static double drag_value_hit_by_enemy = 0.3;
 
+    //Multiplayer opponent colour
+    public static Color Multiplayer_Opponent_Colour = Color.CYAN;
+    public static Color Multiplayer_Opponent_Bullet_Colour = Color.CYAN;
+
     //Default particle radius value
     public static double default_particule_radius = 5;
 
