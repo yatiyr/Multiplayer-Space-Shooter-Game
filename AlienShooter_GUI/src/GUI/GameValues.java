@@ -145,6 +145,12 @@ public class GameValues {
     public static double Player_Spawn_CenterY = 750 - Player_Radius;
     public static Color Player_Colour = Color.BLUE;
 
+    public static double Player1_Spawn_CenterX = 300;
+    public static double Player1_Spawn_CenterY = 750 - Player_Radius;
+
+    public static double Player2_Spawn_CenterX = 900;
+    public static double Player2_Spawn_CenterY = 750 - Player_Radius;
+
     public static double max_drag = 3;
     public static double drag_change_rate = 0.03;
     public static double drag_value_hit_by_enemy = 0.3;

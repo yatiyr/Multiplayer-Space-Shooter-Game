@@ -31,9 +31,7 @@ import java.io.*;
 import java.net.Socket;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Random;
+import java.util.*;
 
 public class Engine {
 
@@ -58,6 +56,7 @@ public class Engine {
     private AudioClip lose_sound = new AudioClip(ClassLoader.getSystemResource(GameValues.Game_LoseSound_Path).toExternalForm());
 
     private Player player;
+    private Multiplayer_Opponent multiplayer_opponent;
     private ArrayList<Particule> particules = new ArrayList<>();
     private ArrayList<Alien> aliens = new ArrayList<>();
     private ArrayList<Bullet> bullets = new ArrayList<>();
@@ -70,8 +69,8 @@ public class Engine {
     //Particule list that will be removed soon
     private ArrayList<Particule> particules_removed = new ArrayList<>();
 
-    private ArrayList<Peer2PeerMessage> messages_to_send = new ArrayList<>();
-    private ArrayList<Peer2PeerMessage> messages_received = new ArrayList<>();
+    private Queue<Peer2PeerMessage> messages_to_send = new LinkedList<>();
+    private Queue<Peer2PeerMessage> messages_received = new LinkedList<>();
 
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
@@ -82,6 +81,7 @@ public class Engine {
 
     private boolean isGameNotFinished = true;
 
+    private boolean is_player_fired = false;
 
     private void initialize_sender_receiver_threads() {
 
@@ -93,12 +93,13 @@ public class Engine {
             fromServer = new ObjectInputStream(player_socket.getInputStream());
             toServer = new ObjectOutputStream(player_socket.getOutputStream());
 
-            System.out.println("ssssssss");
-            //wait for server to initiate gme
+
+            //wait for server to tell client
+            //Whether the player is first or second
             playerno = fromServer.readInt();
-            System.out.println("asd");
-            System.out.println(playerno);
-            System.out.println("dsa");
+
+            //for initialization command from server
+            fromServer.readInt();
 
 
 
@@ -107,24 +108,26 @@ public class Engine {
             e.printStackTrace();
         }
 
+        //Thread for sending messages to the other player
+        /*new Thread(() -> {
 
-        new Thread(() -> {
-
-            try {
-
-                while(isGameNotFinished) {
-                    if(!messages_to_send.isEmpty()) {
-                        toServer.writeObject(messages_to_send.get(0));
-                        messages_to_send.remove(0);
+            while(isGameNotFinished) {
+                //System.out.println(messages_to_send);
+                if(!messages_to_send.isEmpty()) {
+                    try {
+                        System.out.println("dsadadsdsaadsadsadsads");
+                        toServer.writeObject(messages_to_send.poll());
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
-            }
-            catch (Exception e) {
-                e.printStackTrace();
+
             }
 
-        }).start();
+        }).start();*/
 
+        //Thread for receiving messages from other player
+        //this puts messages to an array list to be consumed
         new Thread(() -> {
 
             try {
@@ -261,6 +264,27 @@ public class Engine {
 
             initialize_sender_receiver_threads();
 
+            remove(player);
+
+            System.out.println(playerno);
+
+            if(playerno == 1) {
+                player = new Player(GameValues.Player1_Spawn_CenterX,GameValues.Player1_Spawn_CenterY);
+                add(player);
+
+                multiplayer_opponent = new Multiplayer_Opponent(GameValues.Player2_Spawn_CenterX,GameValues.Player2_Spawn_CenterY);
+                add(multiplayer_opponent);
+
+            }
+            else {
+                player = new Player(GameValues.Player2_Spawn_CenterX,GameValues.Player2_Spawn_CenterY);
+                add(player);
+
+                multiplayer_opponent = new Multiplayer_Opponent(GameValues.Player1_Spawn_CenterX,GameValues.Player1_Spawn_CenterY);
+                add(multiplayer_opponent);
+
+            }
+
             multiplayer_timeline_setup(level);
 
             return 1;
@@ -316,6 +340,7 @@ public class Engine {
                 if(player.get_one_tap_fire())
                 {
                     player.fire_bullet();
+                    is_player_fired = true;
                     player.set_one_tap_fire(false);
                 }
             }
@@ -643,6 +668,40 @@ public class Engine {
                     particule.todo();
 
                 }
+
+                if(!messages_received.isEmpty()) {
+                Peer2PeerMessage message_received = messages_received.poll();
+                multiplayer_opponent.setCenterX(message_received.getPosition()[0]);
+                multiplayer_opponent.setCenterY(message_received.getPosition()[1]);
+
+                if(message_received.isI_fired()) {
+                    multiplayer_opponent.fire_bullet();
+                }
+                System.out.println(multiplayer_opponent.getCenterX());
+                }
+
+
+                Peer2PeerMessage message = new Peer2PeerMessage(false,false,player.getCenterX(),player.getCenterY(),is_player_fired,score.getValue(),false);
+                is_player_fired = false;
+                toServer.writeObject(message);
+                messages_to_send.add(message);
+
+                //We have queued the ones to delete
+                //now really delete them
+
+                for(Particule particule : particules_removed) {
+                    remove(particule);
+                }
+
+                //We add the ones we determined
+                for(Particule particule : particules_added) {
+                    add(particule);
+                }
+
+                //now clear queues
+                particules_added.clear();
+                particules_removed.clear();
+
             }
             catch (Exception e) {
                 e.printStackTrace();

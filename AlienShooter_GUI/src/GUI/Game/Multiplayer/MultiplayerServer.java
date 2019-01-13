@@ -40,26 +40,28 @@ public class MultiplayerServer extends Application {
                     System.out.println("Player1 has joined");
 
 
-                    ObjectOutputStream oos = new ObjectOutputStream(
-                            player1.getOutputStream()
-                    );
-                    oos.writeInt(MultiplayerConstants.PLAYER1);
-                    oos.flush();
+                    //Initializing input and output strings to exchange messages
+                    ObjectOutputStream toPlayer1 = new ObjectOutputStream(player1.getOutputStream());
+                    ObjectInputStream fromPlayer1 = new ObjectInputStream(player1.getInputStream());
+
+                    toPlayer1.writeInt(MultiplayerConstants.PLAYER1);
+                    toPlayer1.flush();
 
 
                     Socket player2 = serverSocket.accept();
 
+
                     System.out.println("Player2 has joined");
 
-                    ObjectOutputStream oos2 = new ObjectOutputStream(
-                            player2.getOutputStream()
-                    );
-                    oos2.writeInt(MultiplayerConstants.PLAYER2);
-                    oos2.flush();
+                    ObjectOutputStream toPlayer2 = new ObjectOutputStream(player2.getOutputStream());
+                    ObjectInputStream fromPlayer2 = new ObjectInputStream(player2.getInputStream());
+
+                    toPlayer2.writeInt(MultiplayerConstants.PLAYER2);
+                    toPlayer2.flush();
 
                     System.out.println("New game is starting between these two players...");
 
-                    new Thread(new HandleSession(player1,player2)).start();
+                    new Thread(new HandleSession(player1,player2,toPlayer1,toPlayer2,fromPlayer1,fromPlayer2)).start();
 
                 }
 
@@ -82,33 +84,34 @@ public class MultiplayerServer extends Application {
         private ObjectOutputStream toPlayer2;
         private ObjectInputStream fromPlayer2;
 
-        public HandleSession(Socket player1,Socket player2) {
+        public HandleSession(Socket player1,Socket player2,ObjectOutputStream toPlayer1,ObjectOutputStream toPlayer2,ObjectInputStream fromPlayer1, ObjectInputStream fromPlayer2) {
 
             this.player1 = player1;
             this.player2 = player2;
+            this.toPlayer1 = toPlayer1;
+            this.toPlayer2 = toPlayer2;
+            this.fromPlayer1 = fromPlayer1;
+            this.fromPlayer2 = fromPlayer2;
         }
 
         public void run() {
 
             try {
 
-                //Initializing input and output strings to exchange messages
-                toPlayer1 = new ObjectOutputStream(player1.getOutputStream());
-                fromPlayer1 = new ObjectInputStream(player1.getInputStream());
-
-                toPlayer2 = new ObjectOutputStream(player2.getOutputStream());
-                fromPlayer2 = new ObjectInputStream(player2.getInputStream());
 
 
                 //Sends initial message to start the timelines of players
-                toPlayer1.write(1);
-                toPlayer2.write(1);
+                toPlayer1.writeInt(1);
+                toPlayer1.flush();
+                toPlayer2.writeInt(1);
+                toPlayer2.flush();
 
                 while(true) {
 
                     //Reading messages
                     Peer2PeerMessage message_from_player1 = (Peer2PeerMessage) fromPlayer1.readObject();
                     Peer2PeerMessage message_from_player2 = (Peer2PeerMessage) fromPlayer2.readObject();
+
 
                     if(message_from_player1.isI_won_dude()) {
                         //simdilik sadece break olsun
@@ -121,7 +124,9 @@ public class MultiplayerServer extends Application {
 
                     //Exchanging arrived messages
                     toPlayer2.writeObject(message_from_player1);
+                    toPlayer2.flush();
                     toPlayer1.writeObject(message_from_player2);
+                    toPlayer1.flush();
 
                 }
 

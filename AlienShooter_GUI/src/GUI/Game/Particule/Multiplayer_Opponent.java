@@ -38,6 +38,19 @@ public class Multiplayer_Opponent extends Live_Being {
         setCenterY(GameValues.Player_Spawn_CenterY);
     }
 
+    public Multiplayer_Opponent(double centerX, double centerY) {
+
+
+        super(GameValues.Player_MaxHealth,GameValues.Player_Radius);
+        super.setCurhealth(GameValues.Player_MaxHealth);
+
+        super.setFill(GameValues.Multiplayer_Opponent_Colour);
+
+        setCenterX(centerX);
+        setCenterY(centerY);
+
+    }
+
 
 
     @Override
@@ -52,48 +65,48 @@ public class Multiplayer_Opponent extends Live_Being {
 
         if(upgrade_level == 0) {
             ((Game_Pane) getParent()).getEngine().add_queue(
-                    new Player_Bullet(getCenterX(), getCenterY() - getRadius())
+                    new Multiplayer_Opponent_Bullet(getCenterX(), getCenterY() - getRadius())
             );
         }
         else if(upgrade_level == 1) {
 
             ((Game_Pane) getParent()).getEngine().add_queue(
-                    new Player_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl1_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl1_DeltaX + GameValues.Player_Weaponlvl1_Bullet_Seperation,GameValues.Player_Weaponlvl1_DeltaY)
+                    new Multiplayer_Opponent_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl1_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl1_DeltaX + GameValues.Player_Weaponlvl1_Bullet_Seperation,GameValues.Player_Weaponlvl1_DeltaY)
             );
             ((Game_Pane) getParent()).getEngine().add_queue(
-                    new Player_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl1_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl1_DeltaX - GameValues.Player_Weaponlvl1_Bullet_Seperation,GameValues.Player_Weaponlvl1_DeltaY)
+                    new Multiplayer_Opponent_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl1_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl1_DeltaX - GameValues.Player_Weaponlvl1_Bullet_Seperation,GameValues.Player_Weaponlvl1_DeltaY)
             );
 
 
         }
         else if(upgrade_level == 2) {
             ((Game_Pane) getParent()).getEngine().add_queue(
-                    new Player_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl2_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl2_DeltaX + GameValues.Player_Weaponlvl2_Bullet_Seperation,GameValues.Player_Weaponlvl2_DeltaY)
+                    new Multiplayer_Opponent_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl2_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl2_DeltaX + GameValues.Player_Weaponlvl2_Bullet_Seperation,GameValues.Player_Weaponlvl2_DeltaY)
             );
             ((Game_Pane) getParent()).getEngine().add_queue(
-                    new Player_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl2_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl2_DeltaX,GameValues.Player_Weaponlvl2_DeltaY)
+                    new Multiplayer_Opponent_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl2_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl2_DeltaX,GameValues.Player_Weaponlvl2_DeltaY)
             );
             ((Game_Pane) getParent()).getEngine().add_queue(
-                    new Player_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl2_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl2_DeltaX - GameValues.Player_Weaponlvl2_Bullet_Seperation,GameValues.Player_Weaponlvl2_DeltaY)
+                    new Multiplayer_Opponent_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl2_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl2_DeltaX - GameValues.Player_Weaponlvl2_Bullet_Seperation,GameValues.Player_Weaponlvl2_DeltaY)
             );
 
         }
         else if(upgrade_level == 3) {
 
             ((Game_Pane) getParent()).getEngine().add_queue(
-                    new Player_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl3_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl3_DeltaX + 2*GameValues.Player_Weaponlvl3_Bullet_Seperation,GameValues.Player_Weaponlvl3_DeltaY)
+                    new Multiplayer_Opponent_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl3_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl3_DeltaX + 2*GameValues.Player_Weaponlvl3_Bullet_Seperation,GameValues.Player_Weaponlvl3_DeltaY)
             );
             ((Game_Pane) getParent()).getEngine().add_queue(
-                    new Player_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl3_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl3_DeltaX + GameValues.Player_Weaponlvl3_Bullet_Seperation,GameValues.Player_Weaponlvl3_DeltaY)
+                    new Multiplayer_Opponent_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl3_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl3_DeltaX + GameValues.Player_Weaponlvl3_Bullet_Seperation,GameValues.Player_Weaponlvl3_DeltaY)
             );
             ((Game_Pane) getParent()).getEngine().add_queue(
-                    new Player_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl3_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl3_DeltaX,GameValues.Player_Weaponlvl3_DeltaY)
+                    new Multiplayer_Opponent_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl3_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl3_DeltaX,GameValues.Player_Weaponlvl3_DeltaY)
             );
             ((Game_Pane) getParent()).getEngine().add_queue(
-                    new Player_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl3_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl3_DeltaX - GameValues.Player_Weaponlvl3_Bullet_Seperation,GameValues.Player_Weaponlvl3_DeltaY)
+                    new Multiplayer_Opponent_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl3_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl3_DeltaX - GameValues.Player_Weaponlvl3_Bullet_Seperation,GameValues.Player_Weaponlvl3_DeltaY)
             );
             ((Game_Pane) getParent()).getEngine().add_queue(
-                    new Player_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl3_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl3_DeltaX - 2*GameValues.Player_Weaponlvl3_Bullet_Seperation,GameValues.Player_Weaponlvl3_DeltaY)
+                    new Multiplayer_Opponent_Bullet(GameValues.Player_Bullet_Radius,GameValues.Player_Weaponlvl3_Damage,getCenterX(), getCenterY() - getRadius(),GameValues.Player_Weaponlvl3_DeltaX - 2*GameValues.Player_Weaponlvl3_Bullet_Seperation,GameValues.Player_Weaponlvl3_DeltaY)
             );
 
         }

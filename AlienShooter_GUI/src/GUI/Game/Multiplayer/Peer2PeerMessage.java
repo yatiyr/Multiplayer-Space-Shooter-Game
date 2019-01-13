@@ -10,13 +10,13 @@ public class Peer2PeerMessage implements Serializable {
 
     private boolean Im_hit = false;
     private boolean I_hit = false;
-    private float[] position = new float[2];
+    private double[] position = new double[2];
     private boolean I_fired = false;
     private int my_score = 0;
     private boolean I_won_dude = false;
 
 
-    public Peer2PeerMessage(boolean Im_hit, boolean I_hit, float pos_x, float pos_y, boolean I_fired, int my_score,boolean I_won_dude) {
+    public Peer2PeerMessage(boolean Im_hit, boolean I_hit, double pos_x, double pos_y, boolean I_fired, int my_score,boolean I_won_dude) {
 
         this.Im_hit = Im_hit;
         this.I_hit = I_hit;
@@ -36,7 +36,7 @@ public class Peer2PeerMessage implements Serializable {
         return I_hit;
     }
 
-    public float[] getPosition() {
+    public double[] getPosition() {
         return position;
     }
 
