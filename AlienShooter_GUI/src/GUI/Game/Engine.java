@@ -55,6 +55,9 @@ public class Engine {
 
     private AudioClip lose_sound = new AudioClip(ClassLoader.getSystemResource(GameValues.Game_LoseSound_Path).toExternalForm());
 
+    private AudioClip tihulu_sound = new AudioClip(ClassLoader.getSystemResource(GameValues.Tihulu_Sound_Path).toExternalForm());
+    private AudioClip kuna_sound = new AudioClip(ClassLoader.getSystemResource(GameValues.Kuna_Sound_Path).toExternalForm());
+
     private Player player;
     private Multiplayer_Opponent multiplayer_opponent;
     private BirCisim birCisim;
@@ -111,23 +114,6 @@ public class Engine {
             e.printStackTrace();
         }
 
-        //Thread for sending messages to the other player
-        /*new Thread(() -> {
-
-            while(isGameNotFinished) {
-                //System.out.println(messages_to_send);
-                if(!messages_to_send.isEmpty()) {
-                    try {
-                        System.out.println("dsadadsdsaadsadsadsads");
-                        toServer.writeObject(messages_to_send.poll());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-
-        }).start();*/
 
         //Thread for receiving messages from other player
         //this puts messages to an array list to be consumed
@@ -151,7 +137,7 @@ public class Engine {
 
         primestage.setTitle("ALIEN SHOOTER");
 
-        Initialize_Level(4);
+        Initialize_Level(1);
 
         primestage.setResizable(false);
 
@@ -287,6 +273,13 @@ public class Engine {
                 add(multiplayer_opponent);
 
             }
+
+            game_music.setCycleCount(MediaPlayer.INDEFINITE);
+            game_music.play();
+
+            // - Komutan Logar, Bir Cisim yaklasiyor efendim.
+            // - Kimsin sen? Cik disari, cik!
+            tihulu_sound.play();
 
             birCisim = new BirCisim();
 
@@ -676,8 +669,55 @@ public class Engine {
 
 
             try {
+
+                Peer2PeerMessage message = new Peer2PeerMessage(false,false,player.getCenterX(),player.getCenterY(),is_player_fired,score.getValue(),false,false);
+
+
                 for (Particule particule : particules) {
                     particule.todo();
+
+                    if (particule instanceof Player) {
+
+                        if (((Live_Being) particule).getCurhealth() <= 0) {
+
+                            game_music.stop();
+
+                            //lose_sound.setCycleCount(1);
+                            kuna_sound.play();
+
+                            multiplayer_timeline.stop();
+
+                            HttpClient httpClient = HttpClientBuilder.create().build();
+                            HttpPost request = new HttpPost(GameValues.Update_Weekly_Table_Request_Url);
+                            HttpPost request2 = new HttpPost(GameValues.Update_AllTime_Table_Request_Url);
+
+                            String obj = userToJSONstring(this.user);
+                            StringEntity entity = new StringEntity(obj, ContentType.APPLICATION_JSON);
+                            request.setEntity(entity);
+                            request2.setEntity(entity);
+
+                            try {
+                                httpClient.execute(request2);
+                                httpClient.execute(request);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            Label game_over = new Label();
+
+                            game_over.setLayoutX(GameValues.Layout_X);
+                            game_over.setLayoutY(GameValues.Layout_Y);
+                            game_over.setMinWidth(GameValues.Min_Width);
+                            game_over.setTextFill(GameValues.Font_Color);
+                            game_over.setText(GameValues.Message);
+                            game_over.setFont(new Font(GameValues.Font, GameValues.Font_Size));
+                            pane.getChildren().add(game_over);
+                            //YOU DIED MY FRIEND.
+
+                            message.setI_died(true);
+                            remove_queue(particule);
+                        }
+                    }
 
                 }
 
@@ -691,6 +731,11 @@ public class Engine {
                     counter = 0;
                 }
 
+                //this field checks the messages arrived
+                //if other player died, then game finishes,this player wins
+                //if other player wins, then game finished,this player loses
+                //if other player reports that it has fired,the illusion of
+                //that player fires
                 if(!messages_received.isEmpty()) {
                 Peer2PeerMessage message_received = messages_received.poll();
                 multiplayer_opponent.setCenterX(message_received.getPosition()[0]);
@@ -700,7 +745,79 @@ public class Engine {
                     multiplayer_opponent.fire_bullet();
                 }
 
+                if(message_received.isI_died()) {
+                    remove(multiplayer_opponent);
 
+                    game_music.stop();
+                    kuna_sound.stop();
+
+                    HttpClient httpClient = HttpClientBuilder.create().build();
+                    HttpPost request = new HttpPost(GameValues.Update_Weekly_Table_Request_Url);
+                    HttpPost request2 = new HttpPost(GameValues.Update_AllTime_Table_Request_Url);
+
+                    //This turns user object into a json string to update the scoreboard
+                    score.set(score.get() + GameValues.BirCisim_Value);
+                    String obj = userToJSONstring(this.user);
+                    StringEntity entity = new StringEntity(obj, ContentType.APPLICATION_JSON);
+                    request.setEntity(entity);
+                    request2.setEntity(entity);
+
+                    try {
+                        httpClient.execute(request2);
+                        httpClient.execute(request);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    multiplayer_timeline.stop();
+
+                    Label you_won = new Label();
+
+                    you_won.setLayoutX(GameValues.Layout_X);
+                    you_won.setLayoutY(GameValues.Layout_Y);
+                    you_won.setMinWidth(GameValues.Min_Width);
+                    you_won.setTextFill(GameValues.Font_Color);
+                    you_won.setText(GameValues.win_message);
+                    you_won.setFont(new Font(GameValues.Font, GameValues.Font_Size));
+                    pane.getChildren().add(you_won);
+
+                }
+
+                if(message_received.isI_won_dude()) {
+
+                    game_music.stop();
+                    kuna_sound.stop();
+
+                    HttpClient httpClient = HttpClientBuilder.create().build();
+                    HttpPost request = new HttpPost(GameValues.Update_Weekly_Table_Request_Url);
+                    HttpPost request2 = new HttpPost(GameValues.Update_AllTime_Table_Request_Url);
+
+                    //This turns user object into a json string to update the scoreboard
+                    String obj = userToJSONstring(this.user);
+                    StringEntity entity = new StringEntity(obj, ContentType.APPLICATION_JSON);
+                    request.setEntity(entity);
+                    request2.setEntity(entity);
+
+                    try {
+                        httpClient.execute(request2);
+                        httpClient.execute(request);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    multiplayer_timeline.stop();
+
+                    Label lose = new Label();
+
+                    lose.setLayoutX(GameValues.Layout_X);
+                    lose.setLayoutY(GameValues.Layout_Y);
+                    lose.setMinWidth(GameValues.Min_Width);
+                    lose.setTextFill(GameValues.Font_Color);
+                    lose.setText(GameValues.Message);
+                    lose.setFont(new Font(GameValues.Font, GameValues.Font_Size));
+                    pane.getChildren().add(lose);
+
+                }
 
                 }
 
@@ -738,7 +855,33 @@ public class Engine {
                             if(bullet.intersects(alien.getBoundsInLocal())) {
 
                                 alien.setCurhealth(alien.getCurhealth() - bullet.getDamage());
+                                score.set(score.get() + GameValues.Player_Weaponlvl1_Damage);
                                 remove_queue(bullet);
+
+                                if (alien.getCurhealth() <= 0) {
+
+                                    score.set(score.get() + alien.getValue());
+                                    remove_queue(alien);
+
+                                    game_music.stop();
+                                    kuna_sound.stop();
+
+                                    multiplayer_timeline.stop();
+
+                                    Label you_won = new Label();
+
+                                    you_won.setLayoutX(GameValues.Layout_X);
+                                    you_won.setLayoutY(GameValues.Layout_Y);
+                                    you_won.setMinWidth(GameValues.Min_Width);
+                                    you_won.setTextFill(GameValues.Font_Color);
+                                    you_won.setText(GameValues.win_message);
+                                    you_won.setFont(new Font(GameValues.Font, GameValues.Font_Size));
+                                    pane.getChildren().add(you_won);
+
+                                    message.setI_won_dude(true);
+
+                                }
+
                             }
                         }
                     }
@@ -762,10 +905,6 @@ public class Engine {
 
                 }
 
-
-
-
-                Peer2PeerMessage message = new Peer2PeerMessage(false,false,player.getCenterX(),player.getCenterY(),is_player_fired,score.getValue(),false);
                 is_player_fired = false;
                 toServer.writeObject(message);
                 messages_to_send.add(message);
@@ -793,8 +932,6 @@ public class Engine {
         }));
         multiplayer_timeline.setCycleCount(Timeline.INDEFINITE);
         multiplayer_timeline.play();
-
-
 
     }
 

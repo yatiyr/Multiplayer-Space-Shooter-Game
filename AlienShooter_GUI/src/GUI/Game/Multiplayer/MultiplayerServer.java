@@ -113,15 +113,6 @@ public class MultiplayerServer extends Application {
                     Peer2PeerMessage message_from_player2 = (Peer2PeerMessage) fromPlayer2.readObject();
 
 
-                    if(message_from_player1.isI_won_dude()) {
-                        //simdilik sadece break olsun
-                        break;
-                    }
-                    else if(message_from_player2.isI_won_dude()) {
-                        //simdilik sadece break olsun
-                        break;
-                    }
-
                     //Exchanging arrived messages
                     toPlayer2.writeObject(message_from_player1);
                     toPlayer2.flush();

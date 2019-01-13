@@ -35,6 +35,8 @@ public class GameValues {
     //Paths of sound files
     public static String Game_Sound_Path = "GUI/Game/Game_Sounds/game_music1.mp3";
     public static String Game_LoseSound_Path = "GUI/Game/Game_Sounds/commander_logar_speech1.mp3";
+    public static String Tihulu_Sound_Path = "GUI/Game/Game_Sounds/bircisimyaklasiyor.mp3";
+    public static String Kuna_Sound_Path = "GUI/Game/Game_Sounds/yakariz.mp3";
 
     //Fade Transition time in miliseconds
     public static int Fade_Scene_Trans_Time = 6000;
@@ -71,6 +73,9 @@ public class GameValues {
     public static int Font_Size = 40;
     public static String Message = "YOU LOST, GAME OVER!";
     public static Color Font_Color = Color.CRIMSON;
+
+    //Winning message
+    public static String win_message = "YOU WIN, BRAVO!";
 
     //Player Properties
     public static int Max_Health = 100;
@@ -202,7 +207,7 @@ public class GameValues {
     public static double BirCisim_Radius = 50;
     public static double BirCisim_DeltaX = 0;
     public static boolean BirCisim_Direction = false;
-    public static int BirCisim_Max_Health = 10000;
+    public static int BirCisim_Max_Health = 1000;
     public static int BirCisim_Value = 15000;
     public static Color BirCisim_Colour = Color.CRIMSON;
 
