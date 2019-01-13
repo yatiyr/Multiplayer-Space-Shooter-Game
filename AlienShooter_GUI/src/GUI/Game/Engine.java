@@ -57,6 +57,7 @@ public class Engine {
 
     private Player player;
     private Multiplayer_Opponent multiplayer_opponent;
+    private BirCisim birCisim;
     private ArrayList<Particule> particules = new ArrayList<>();
     private ArrayList<Alien> aliens = new ArrayList<>();
     private ArrayList<Bullet> bullets = new ArrayList<>();
@@ -82,6 +83,8 @@ public class Engine {
     private boolean isGameNotFinished = true;
 
     private boolean is_player_fired = false;
+
+    private int counter = 0;
 
     private void initialize_sender_receiver_threads() {
 
@@ -285,7 +288,11 @@ public class Engine {
 
             }
 
-            multiplayer_timeline_setup(level);
+            birCisim = new BirCisim();
+
+            add(birCisim);
+
+            multiplayer_timeline_setup();
 
             return 1;
         }
@@ -432,6 +439,10 @@ public class Engine {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public Multiplayer_Opponent getMultiplayer_opponent() {
+        return multiplayer_opponent;
     }
 
     //We initiate timelines here, this is the core of the game
@@ -659,14 +670,25 @@ public class Engine {
 
     }
 
-    private void multiplayer_timeline_setup(int level) {
+    private void multiplayer_timeline_setup() {
 
         multiplayer_timeline = new Timeline(new KeyFrame(Duration.millis(GameValues.Game_Timeline_Duration), event -> {
+
 
             try {
                 for (Particule particule : particules) {
                     particule.todo();
 
+                }
+
+                counter = counter + 1;
+
+                if(counter == GameValues.BirCisim_Fire2_counter) {
+                    birCisim.fire2();
+                }
+                if(counter == GameValues.BirCisim_Fire1_counter) {
+                    birCisim.fire1();
+                    counter = 0;
                 }
 
                 if(!messages_received.isEmpty()) {
@@ -677,8 +699,70 @@ public class Engine {
                 if(message_received.isI_fired()) {
                     multiplayer_opponent.fire_bullet();
                 }
-                System.out.println(multiplayer_opponent.getCenterX());
+
+
+
                 }
+
+
+
+                //Collision detection
+                for(Bullet bullet : bullets) {
+
+                    //Plekumat bullets hitting player
+                    if(bullet instanceof BirCisim_Bullet1 || bullet instanceof BirCisim_Bullet2) {
+
+                        if(bullet.intersects(player.getBoundsInLocal())) {
+                            player.setCurhealth(player.getCurhealth() - bullet.getDamage());
+                            if(score.get() <= 0) {
+                                score.set(0);
+                            }
+                            else {
+                                score.set(score.get() - GameValues.Score_Reduction_Plekumat);
+                            }
+
+                            remove_queue(bullet);
+                        }
+
+                        if(bullet.intersects(multiplayer_opponent.getBoundsInLocal())) {
+                            remove_queue(bullet);
+                        }
+
+                    }
+
+                    //If Player hits aliens
+                    if(bullet instanceof Player_Bullet) {
+
+                        for(Alien alien : aliens) {
+
+                            if(bullet.intersects(alien.getBoundsInLocal())) {
+
+                                alien.setCurhealth(alien.getCurhealth() - bullet.getDamage());
+                                remove_queue(bullet);
+                            }
+                        }
+                    }
+
+                    if(bullet instanceof Multiplayer_Opponent_Bullet) {
+
+                        for(Alien alien : aliens) {
+                            if(bullet.intersects(alien.getBoundsInLocal())) {
+
+                                alien.setCurhealth(alien.getCurhealth() - bullet.getDamage());
+                                remove_queue(bullet);
+
+                            }
+
+                        }
+
+                    }
+
+                    if(bullet.getCenterY() + bullet.getRadius() > GameValues.Game_Pane_Height)
+                        remove_queue(bullet);
+
+                }
+
+
 
 
                 Peer2PeerMessage message = new Peer2PeerMessage(false,false,player.getCenterX(),player.getCenterY(),is_player_fired,score.getValue(),false);

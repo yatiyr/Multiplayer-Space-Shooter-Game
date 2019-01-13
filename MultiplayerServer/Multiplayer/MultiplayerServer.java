@@ -1,4 +1,4 @@
-package GUI.Game.Multiplayer;
+package Multiplayer;
 
 import javafx.application.Application;
 import javafx.stage.Stage;

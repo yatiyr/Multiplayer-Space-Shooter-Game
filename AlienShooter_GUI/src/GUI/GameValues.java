@@ -44,12 +44,10 @@ public class GameValues {
     public static int Level1_Plekumat_No = 10;
     public static int Level2_Plekumat_No = 15;
     public static int Level3_Plekumat_No = 5;
-    public static int Level4_Plekumat_No = 12;
 
     public static int Level1_BossPlekumat_No = 0;
     public static int Level2_BossPlekumat_No = 1;
     public static int Level3_BossPlekumat_No = 3;
-    public static int Level4_BossPlekumat_No = 12;
 
     //Timeline Durations in miliseconds
     public static int Game_Timeline_Duration = 10;
@@ -186,18 +184,21 @@ public class GameValues {
     public static double BirCisim_Bullet2_Radius = 3;
     public static int BirCisim_Bullet2_Damage = 10;
     public static double BirCisim_Bullet1_DeltaX = 0;
-    public static double BirCisim_Bullet1_DeltaY = 1;
+    public static double BirCisim_Bullet1_DeltaY = 0.5;
     public static double BirCisim_Bullet2_DeltaX = 0;
-    public static double BirCisim_Bullet2_DeltaY = 2.5;
+    public static double BirCisim_Bullet2_DeltaY = 1;
 
     public static double BirCisim_Bullet1_Seperation_Angle = 40;
-    public static double BirCisim_Bullet2_Seperation_Angle = 20;
 
 
     public static Color BirCisim_Bullet1_Colour = Color.CRIMSON;
     public static Color BirCisim_Bullet2_Colour = Color.CRIMSON;
 
 
+    public static int BirCisim_Fire1_counter = 150;
+    public static int BirCisim_Fire2_counter = 50;
+    public static double BirCisim_SpawnX = 600;
+    public static double BirCisim_SpawnY = 100;
     public static double BirCisim_Radius = 50;
     public static double BirCisim_DeltaX = 0;
     public static boolean BirCisim_Direction = false;

@@ -1,4 +1,4 @@
-package GUI.Game.Multiplayer;
+package Multiplayer;
 
 public class MultiplayerConstants {
 
