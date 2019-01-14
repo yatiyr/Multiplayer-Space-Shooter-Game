@@ -57,12 +57,12 @@ public class GameValues {
     public static int Boss_Plekumat_Fire_Duration = 400;
 
     //Http request url's
-    public static String Update_Weekly_Table_Request_Url = "http://localhost:8080/update_score_weekly";
-    public static String Update_AllTime_Table_Request_Url = "http://localhost:8080/update_score_alltime";
-    public static String Registration_Url = "http://localhost:8080/registration";
-    public static String Weekly_Leaderboard_Request_Url = "http://localhost:8080/get_weekly_leaderboard";
-    public static String All_Time_Leaderboard_Request_Url = "http://localhost:8080/get_all_time_leaderboard";
-    public static String Sign_In_Request_Url = "http://localhost:8080/sign_in";
+    public static String Update_Weekly_Table_Request_Url = "http://144.122.71.144:8080/update_score_weekly";
+    public static String Update_AllTime_Table_Request_Url = "http://144.122.71.144:8080/update_score_alltime";
+    public static String Registration_Url = "http://144.122.71.144:8080/registration";
+    public static String Weekly_Leaderboard_Request_Url = "http://144.122.71.144:8080/get_weekly_leaderboard";
+    public static String All_Time_Leaderboard_Request_Url = "http://144.122.71.144:8080/get_all_time_leaderboard";
+    public static String Sign_In_Request_Url = "http://144.122.71.144:8080/sign_in";
 
 
     //Properties of Game Over Text in Game Over window
@@ -73,7 +73,10 @@ public class GameValues {
     public static int Font_Size = 40;
     public static String Message = "YOU LOST, GAME OVER!";
     public static Color Font_Color = Color.CRIMSON;
+    public static Color Font_Color2 = Color.DARKOLIVEGREEN;
 
+    //Waitin for player messages
+    public static String waiting_for_player = "Waiting for other player...";
     //Winning message
     public static String win_message = "YOU WIN, BRAVO!";
 

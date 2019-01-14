@@ -40,6 +40,7 @@ public class Engine {
     private User user;
     private Stage primestage = new Stage();
 
+    //Timelines, they are the core of the game
     private Timeline game_timeline;
     private Timeline plekumat_fire;
     private Timeline boss_plekumat_fire;
@@ -47,14 +48,12 @@ public class Engine {
 
     private IntegerProperty score = new SimpleIntegerProperty(0);
 
+    //This is the music played when the game runs
     private MediaPlayer game_music = new MediaPlayer(
             new Media(ClassLoader.getSystemResource(GameValues.Game_Sound_Path).toExternalForm()));
 
-    /**private MediaPlayer lose_sound = new MediaPlayer(
-            new Media(ClassLoader.getSystemResource(GameValues.Game_LoseSound_Path).toExternalForm())); **/
-
+    //These are sounds to make game funnier
     private AudioClip lose_sound = new AudioClip(ClassLoader.getSystemResource(GameValues.Game_LoseSound_Path).toExternalForm());
-
     private AudioClip tihulu_sound = new AudioClip(ClassLoader.getSystemResource(GameValues.Tihulu_Sound_Path).toExternalForm());
     private AudioClip kuna_sound = new AudioClip(ClassLoader.getSystemResource(GameValues.Kuna_Sound_Path).toExternalForm());
 
@@ -73,32 +72,38 @@ public class Engine {
     //Particule list that will be removed soon
     private ArrayList<Particule> particules_removed = new ArrayList<>();
 
+    //These are queues for sending and receiving messages in multiplayer part
+    //of the game
     private Queue<Peer2PeerMessage> messages_to_send = new LinkedList<>();
     private Queue<Peer2PeerMessage> messages_received = new LinkedList<>();
-
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
-
     private int playerno = 0;
-
     private Socket player_socket;
-
     private boolean isGameNotFinished = true;
-
     private boolean is_player_fired = false;
-
     private int counter = 0;
+
+    private Label waiting_for_players;
 
     private void initialize_sender_receiver_threads() {
 
-
         try {
 
-            player_socket = new Socket(MultiplayerConstants.host,MultiplayerConstants.server_port);
+            //Add label for waiting the other player
+            waiting_for_players = new Label();
+            waiting_for_players.setLayoutX(GameValues.Layout_X);
+            waiting_for_players.setLayoutY(GameValues.Layout_Y);
+            waiting_for_players.setMinWidth(GameValues.Min_Width);
+            waiting_for_players.setTextFill(GameValues.Font_Color2);
+            waiting_for_players.setText(GameValues.waiting_for_player);
+            waiting_for_players.setFont(new Font(GameValues.Font, GameValues.Font_Size));
+            pane.getChildren().add(waiting_for_players);
 
+            //Initialize socket and data connections between client and the server
+            player_socket = new Socket(MultiplayerConstants.host,MultiplayerConstants.server_port);
             fromServer = new ObjectInputStream(player_socket.getInputStream());
             toServer = new ObjectOutputStream(player_socket.getOutputStream());
-
 
             //wait for server to tell client
             //Whether the player is first or second
@@ -107,13 +112,10 @@ public class Engine {
             //for initialization command from server
             fromServer.readInt();
 
-
-
         } catch (IOException e) {
 
             e.printStackTrace();
         }
-
 
         //Thread for receiving messages from other player
         //this puts messages to an array list to be consumed
@@ -132,15 +134,14 @@ public class Engine {
 
     }
 
-
+    //Engine is called when play button
+    //is pressed.It sets title, and
+    //initializes level 1
     public Engine() {
 
         primestage.setTitle("ALIEN SHOOTER");
-
         Initialize_Level(1);
-
         primestage.setResizable(false);
-
         primestage.show();
 
     }
@@ -161,9 +162,9 @@ public class Engine {
         o2.accumulate("username",user.getName());
         o2.accumulate("date",s);
 
-
         return o2.toString();
     }
+
     //This is for the transitions between game levels
     //to make game running smoother
     private void FadeSceneTrans(int level) {
@@ -181,7 +182,6 @@ public class Engine {
 
 
     }
-
 
     //This also works for making game smoother
     private void Clear_and_Fade(int level) {
@@ -211,7 +211,6 @@ public class Engine {
         key_binds_setup();
 
         player = new Player();
-
         add(player);
 
         if(level == 1) {
@@ -233,7 +232,6 @@ public class Engine {
                 initially_added_aliens_per_level.add(new Boss_Plekumat());
             }
         }
-
         else if(level == 3) {
             for(int i=0;i<GameValues.Level3_Plekumat_No;i++) {
                 initially_added_aliens_per_level.add(new Plekumat());
@@ -242,21 +240,21 @@ public class Engine {
                 initially_added_aliens_per_level.add(new Boss_Plekumat());
             }
         }
+        //If level is 4, then it means multiplayer is going to start
         else if(level == 4) {
 
-            /*for(int i=0;i<GameValues.Level4_Plekumat_No;i++) {
-                initially_added_aliens_per_level.add(new Plekumat());
-            }
-            for(int i=0;i<GameValues.Level4_BossPlekumat_No;i++) {
-                initially_added_aliens_per_level.add(new Boss_Plekumat());
-            } */
-
+            //We first initizlize our threads for communication
+            //and wait response from the server
             initialize_sender_receiver_threads();
 
+            //Remove waiting for players label since other player has arrived
+            pane.getChildren().remove(waiting_for_players);
+
+            //we remove the player initilized before
             remove(player);
 
-            System.out.println(playerno);
 
+            //Spawn places of player1 and player2 are determined by the server
             if(playerno == 1) {
                 player = new Player(GameValues.Player1_Spawn_CenterX,GameValues.Player1_Spawn_CenterY);
                 add(player);
@@ -274,6 +272,7 @@ public class Engine {
 
             }
 
+            //Game music starts
             game_music.setCycleCount(MediaPlayer.INDEFINITE);
             game_music.play();
 
@@ -281,28 +280,28 @@ public class Engine {
             // - Kimsin sen? Cik disari, cik!
             tihulu_sound.play();
 
+            //Boss(birCisim) added
             birCisim = new BirCisim();
-
             add(birCisim);
 
+            //Timeline for multiplayer part of the game
+            //starts
             multiplayer_timeline_setup();
 
             return 1;
         }
 
+        //Game music and timelines are started
+        //for the single player part of the game
         game_music.setCycleCount(MediaPlayer.INDEFINITE);
         game_music.play();
-
-
         game_music.setVolume(30);
-
         timeline_setup(level);
 
         return 0;
     }
 
-
-
+    //Setting up the scene
     private void scene_setup(Game_Pane pane) {
         this.pane = pane;
         pane.bindScore(score);
@@ -311,6 +310,8 @@ public class Engine {
         primestage.setScene(scene);
     }
 
+    //Here we setup the keys for controlling
+    //the player,firing and restarting
     private void key_binds_setup () {
 
         scene.setOnKeyPressed( event -> {
@@ -340,7 +341,14 @@ public class Engine {
                 if(player.get_one_tap_fire())
                 {
                     player.fire_bullet();
+
+                    //is_player_fired is needed
+                    //for multiplayer part
+                    //if is_player_fired is true
+                    //player sends message to the
+                    //other player implying that it has fired
                     is_player_fired = true;
+
                     player.set_one_tap_fire(false);
                 }
             }
@@ -385,7 +393,6 @@ public class Engine {
         });
     }
 
-
     //We add particules to our arraylist
     //and also to the game pane
     private void add(Particule particule) {
@@ -401,7 +408,6 @@ public class Engine {
 
         pane.getChildren().add(particule);
     }
-
 
     //We remove particules from arraylists
     //and we also remove them from the game pane
@@ -434,6 +440,8 @@ public class Engine {
         return player;
     }
 
+    //we need to get multiplayer opponent for boss to understand its location and fire
+    //accordingly
     public Multiplayer_Opponent getMultiplayer_opponent() {
         return multiplayer_opponent;
     }
@@ -456,7 +464,6 @@ public class Engine {
                         //lose_sound.setCycleCount(1);
                         lose_sound.play();
 
-
                         HttpClient httpClient = HttpClientBuilder.create().build();
                         HttpPost request = new HttpPost(GameValues.Update_Weekly_Table_Request_Url);
                         HttpPost request2 = new HttpPost(GameValues.Update_AllTime_Table_Request_Url);
@@ -473,14 +480,8 @@ public class Engine {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
-
                         Clear_and_Fade(level + 1);
-
-
                     }
-
-
                     if (particule instanceof Alien) {
 
                         if (((Alien) particule).getCurhealth() <= 0) {
@@ -523,10 +524,8 @@ public class Engine {
             {
                 System.out.println("Level is Over");
             }
-
             //Collision detection
             for(Bullet bullet : bullets) {
-
                 //We move our yummy pismaniyes and see whether
                 //we have a collision with player or not
                 if(bullet instanceof Izmit_Pismaniye) {
@@ -539,7 +538,6 @@ public class Engine {
                         remove_queue(bullet);
                     }
                 }
-
                 //Plekumat bullets hitting player
                 if(bullet instanceof Plekumat_Bullet) {
 
@@ -551,7 +549,6 @@ public class Engine {
                         else {
                             score.set(score.get() - GameValues.Score_Reduction_Plekumat);
                         }
-
                         remove_queue(bullet);
                     }
 
@@ -589,7 +586,6 @@ public class Engine {
                     remove_queue(bullet);
 
             }
-
             //We add pismaniyes to the game enviroment
             if(Math.random() < GameValues.Pismaniye_Frequency) {
 
@@ -603,7 +599,6 @@ public class Engine {
                 add_queue(pismaniye);
 
             }
-
             if(Math.random() < GameValues.Alien_Add_Frequency) {
 
                 int init_size = initially_added_aliens_per_level.size();
@@ -614,29 +609,22 @@ public class Engine {
                     add_queue(enemy);
                     initially_added_aliens_per_level.remove(random_ind);
                 }
-
-
             }
-
             //We have queued the ones to delete
             //now really delete them
-
             for(Particule particule : particules_removed) {
                 remove(particule);
             }
-
             //We add the ones we determined
             for(Particule particule : particules_added) {
                 add(particule);
             }
-
             //now clear queues
             particules_added.clear();
             particules_removed.clear();
         }));
         game_timeline.setCycleCount(Timeline.INDEFINITE);
         game_timeline.play();
-
         plekumat_fire = new Timeline(new KeyFrame(Duration.millis(GameValues.Plekumat_Fire_Duration), event -> {
 
             for(Particule particule : particules) {
@@ -655,29 +643,35 @@ public class Engine {
             }
 
         }));
-
         plekumat_fire.setCycleCount(Timeline.INDEFINITE);
         plekumat_fire.play();
         boss_plekumat_fire.setCycleCount(Timeline.INDEFINITE);
         boss_plekumat_fire.play();
-
     }
 
+
+    //this is the timeline for multiplayer part of the game
+    //Working principle is very similar with normal game timeline
+    //However, here player checks messages arrived from the other player
+    //and with those messages, moves of other player or win/lose conditions are determined
     private void multiplayer_timeline_setup() {
 
         multiplayer_timeline = new Timeline(new KeyFrame(Duration.millis(GameValues.Game_Timeline_Duration), event -> {
 
-
             try {
-
+                //We first form the message to be sent to the other player via our server
                 Peer2PeerMessage message = new Peer2PeerMessage(false,false,player.getCenterX(),player.getCenterY(),is_player_fired,score.getValue(),false,false);
 
-
+                //We iterate the particules in the game.
+                //Player,Opponent,BirCisim and their bullets are the particules
                 for (Particule particule : particules) {
+
+                    //Move particles
                     particule.todo();
 
                     if (particule instanceof Player) {
 
+                        //If our player dies
                         if (((Live_Being) particule).getCurhealth() <= 0) {
 
                             game_music.stop();
@@ -685,8 +679,10 @@ public class Engine {
                             //lose_sound.setCycleCount(1);
                             kuna_sound.play();
 
+                            //Stop the timeline
                             multiplayer_timeline.stop();
 
+                            //Save the score of our player
                             HttpClient httpClient = HttpClientBuilder.create().build();
                             HttpPost request = new HttpPost(GameValues.Update_Weekly_Table_Request_Url);
                             HttpPost request2 = new HttpPost(GameValues.Update_AllTime_Table_Request_Url);
@@ -703,8 +699,8 @@ public class Engine {
                                 e.printStackTrace();
                             }
 
+                            //Gameover label is being shown
                             Label game_over = new Label();
-
                             game_over.setLayoutX(GameValues.Layout_X);
                             game_over.setLayoutY(GameValues.Layout_Y);
                             game_over.setMinWidth(GameValues.Min_Width);
@@ -714,6 +710,9 @@ public class Engine {
                             pane.getChildren().add(game_over);
                             //YOU DIED MY FRIEND.
 
+                            //Here we set the I_died part of the message true
+                            //Thus,the other player will understand that this player
+                            //has died.So opponent understands that he/she is victorious
                             message.setI_died(true);
                             remove_queue(particule);
                         }
@@ -721,8 +720,11 @@ public class Engine {
 
                 }
 
+                //This counter is for firing the BirCisim(Boss Alien)
+                //in the multiplayer
                 counter = counter + 1;
 
+                //Fire1 and Fire2 Counters are determined in gamevalues
                 if(counter == GameValues.BirCisim_Fire2_counter) {
                     birCisim.fire2();
                 }
@@ -782,7 +784,6 @@ public class Engine {
                     pane.getChildren().add(you_won);
 
                 }
-
                 if(message_received.isI_won_dude()) {
 
                     game_music.stop();
@@ -817,16 +818,13 @@ public class Engine {
                     lose.setFont(new Font(GameValues.Font, GameValues.Font_Size));
                     pane.getChildren().add(lose);
 
+                    }
                 }
-
-                }
-
-
 
                 //Collision detection
                 for(Bullet bullet : bullets) {
 
-                    //Plekumat bullets hitting player
+                    //BirCisim bullets hitting player
                     if(bullet instanceof BirCisim_Bullet1 || bullet instanceof BirCisim_Bullet2) {
 
                         if(bullet.intersects(player.getBoundsInLocal())) {
@@ -847,7 +845,7 @@ public class Engine {
 
                     }
 
-                    //If Player hits aliens
+                    //If Player hits birCisim
                     if(bullet instanceof Player_Bullet) {
 
                         for(Alien alien : aliens) {
@@ -880,12 +878,14 @@ public class Engine {
 
                                     message.setI_won_dude(true);
 
-                                }
+                                    toServer.writeObject(message);
 
+                                }
                             }
                         }
                     }
 
+                    //If bullet of multiplayer opponent hits to the birCisim
                     if(bullet instanceof Multiplayer_Opponent_Bullet) {
 
                         for(Alien alien : aliens) {
@@ -893,19 +893,18 @@ public class Engine {
 
                                 alien.setCurhealth(alien.getCurhealth() - bullet.getDamage());
                                 remove_queue(bullet);
-
                             }
-
                         }
-
                     }
-
                     if(bullet.getCenterY() + bullet.getRadius() > GameValues.Game_Pane_Height)
                         remove_queue(bullet);
-
                 }
 
+                //If is_player_fired for controlling the firing of opponent is true
+                //we change it to false at the end of the timeline
                 is_player_fired = false;
+
+                //we write the modified message to the other side
                 toServer.writeObject(message);
                 messages_to_send.add(message);
 
@@ -915,12 +914,10 @@ public class Engine {
                 for(Particule particule : particules_removed) {
                     remove(particule);
                 }
-
                 //We add the ones we determined
                 for(Particule particule : particules_added) {
                     add(particule);
                 }
-
                 //now clear queues
                 particules_added.clear();
                 particules_removed.clear();
@@ -932,9 +929,6 @@ public class Engine {
         }));
         multiplayer_timeline.setCycleCount(Timeline.INDEFINITE);
         multiplayer_timeline.play();
-
     }
-
-
 }
 

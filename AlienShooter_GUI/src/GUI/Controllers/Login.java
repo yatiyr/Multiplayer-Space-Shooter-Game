@@ -50,7 +50,6 @@ public class Login {
         request.setEntity(entity);
 
         HttpResponse response = httpClient.execute(request);
-        System.out.println(response.getStatusLine().getStatusCode());
 
         if(response.getStatusLine().getStatusCode() == 400) {
 
@@ -67,15 +66,10 @@ public class Login {
 
             String json = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
 
-            System.out.println(json);
-
             JSONObject o = new JSONObject(json);
 
             String name = o.getString("name");
             int id = o.getInt("id");
-
-            System.out.println(name);
-            System.out.println(id);
 
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(GameValues.Mainmenu_FXML_Path));
 

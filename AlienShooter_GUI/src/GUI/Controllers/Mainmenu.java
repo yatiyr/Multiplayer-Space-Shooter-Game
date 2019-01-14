@@ -151,13 +151,11 @@ public class Mainmenu {
         HttpGet request = new HttpGet(GameValues.Weekly_Leaderboard_Request_Url);
 
         HttpResponse response = httpClient.execute(request);
-        System.out.println(response.getStatusLine().getStatusCode());
 
 
         HttpEntity responseEntity = response.getEntity();
 
         String json = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
-        System.out.println(json);
 
         JSONArray jsonarray_weekly = new JSONArray(json);
 
@@ -168,11 +166,9 @@ public class Mainmenu {
             for (int i = 0; i < jsonarray_weekly.length() ; i++) {
 
                 JSONObject o = new JSONObject(jsonarray_weekly.get(i ).toString());
-                System.out.println(o);
                 String username_weekly = o.getString("username");
                 int userid_weekly = o.getInt("userId");
                 int score_weekly = o.getInt("score");
-                System.out.println(o.getString("date"));
 
                 User user = new User(userid_weekly, username_weekly, score_weekly);
 
@@ -214,14 +210,10 @@ public class Mainmenu {
         HttpGet request = new HttpGet(GameValues.All_Time_Leaderboard_Request_Url);
 
         HttpResponse response = httpClient.execute(request);
-        System.out.println(response.getStatusLine().getStatusCode());
-
 
         HttpEntity responseEntity = response.getEntity();
 
         String json = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
-
-        System.out.println(json);
 
         JSONArray jsonarray = new JSONArray(json);
 
@@ -231,7 +223,6 @@ public class Mainmenu {
         for(int i=0;i<jsonarray.length();i++) {
 
             JSONObject o = new JSONObject(jsonarray.get(i).toString());
-            System.out.println(o);
             String username = o.getString("username");
             int userid = o.getInt("userId");
             int score = o.getInt("score");
@@ -264,8 +255,5 @@ public class Mainmenu {
 
         stage.show();
 
-
     }
-
-
 }
