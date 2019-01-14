@@ -1,4 +1,4 @@
-**ALIENSHOOTER GUI**
+**ALIENSHOOTER gui**
 
 **1.Project Structure**
 

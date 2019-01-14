@@ -4,14 +4,13 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import com.alienshooter.Ceng453_TermProject_Group15.model.USER;
-import com.alienshooter.Ceng453_TermProject_Group15.service.USERService;
+import com.alienshooter.Ceng453_TermProject_Group15.model.LeaderboardAllTime;
+import com.alienshooter.Ceng453_TermProject_Group15.model.LeaderboardWeekly;
+import com.alienshooter.Ceng453_TermProject_Group15.model.User;
+import com.alienshooter.Ceng453_TermProject_Group15.service.LeaderboardAlltimeService;
+import com.alienshooter.Ceng453_TermProject_Group15.service.UserService;
 
-import com.alienshooter.Ceng453_TermProject_Group15.model.Leaderboard_All_Time;
-import com.alienshooter.Ceng453_TermProject_Group15.service.Leaderboard_All_TimeService;
-
-import com.alienshooter.Ceng453_TermProject_Group15.model.Leaderboard_Weekly;
-import com.alienshooter.Ceng453_TermProject_Group15.service.Leaderboard_WeeklyService;
+import com.alienshooter.Ceng453_TermProject_Group15.service.LeaderboardWeeklyService;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,19 +28,19 @@ import java.util.List;
 public class LoginController {
 
     @Autowired
-    private USERService userService;
+    private UserService userService;
 
     @Autowired
-    private Leaderboard_All_TimeService leaderboard_all_timeService;
+    private LeaderboardAlltimeService leaderboard_alltimeService;
 
     @Autowired
-    private Leaderboard_WeeklyService leaderboard_weeklyService;
+    private LeaderboardWeeklyService leaderboard_weeklyService;
 
-    public LoginController(USERService userService,Leaderboard_All_TimeService leaderboard_all_timeService,Leaderboard_WeeklyService leaderboard_weeklyService)
+    public LoginController(UserService userService, LeaderboardAlltimeService leaderboard_alltimeService, LeaderboardWeeklyService leaderboard_weeklyService)
     {
         this.userService = userService;
         this.leaderboard_weeklyService = leaderboard_weeklyService;
-        this.leaderboard_all_timeService = leaderboard_all_timeService;
+        this.leaderboard_alltimeService = leaderboard_alltimeService;
     }
 
     /*
@@ -53,15 +52,15 @@ public class LoginController {
     Parameter :Json  @RequestBody
      */
     @RequestMapping(value="/delete_user",method = RequestMethod.POST)
-    public ResponseEntity delete_user(@RequestBody USER user) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
-        USER user_exists = userService.findByName(user.getName());
+    public ResponseEntity delete_user(@RequestBody User user) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
+        User user_exists = userService.findByName(user.getName());
         if(user_exists == null)
         {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("this user already doesn't exist");
         }
 
-        String_Encrypt_Decryptor encrypt_decryptor = new String_Encrypt_Decryptor(user.getPassword(),0);
+        StringEncryptDecryptor encrypt_decryptor = new StringEncryptDecryptor(user.getPassword(),0);
         String password = encrypt_decryptor.getPassphrase_enc();
         if(password.equals(user_exists.getPassword()))
         {
@@ -79,9 +78,9 @@ public class LoginController {
     Returns the whole list of all_time_leaderboard in json to the client.
      */
     @RequestMapping(value="/get_all_time_leaderboard",method = RequestMethod.GET)
-    public ResponseEntity<List<Leaderboard_All_Time>> get_all_time_leaderboard()
+    public ResponseEntity<List<LeaderboardAllTime>> get_all_time_leaderboard()
     {
-        List<Leaderboard_All_Time> lb_list = leaderboard_all_timeService.get_all_time_leaderboard();
+        List<LeaderboardAllTime> lb_list = leaderboard_alltimeService.get_all_time_leaderboard();
 
         return new ResponseEntity<>(lb_list,HttpStatus.OK);
     }
@@ -90,9 +89,9 @@ public class LoginController {
     Returns the whole list of weeklt_leaderboard in json to the client.
      */
     @RequestMapping(value="/get_weekly_leaderboard",method = RequestMethod.GET)
-    public ResponseEntity<List<Leaderboard_Weekly>> get_weekly_leaderboard()
+    public ResponseEntity<List<LeaderboardWeekly>> get_weekly_leaderboard()
     {
-        List<Leaderboard_Weekly> lb_list = leaderboard_weeklyService.get_weekly_leaderboard();
+        List<LeaderboardWeekly> lb_list = leaderboard_weeklyService.get_weekly_leaderboard();
 
         return new ResponseEntity<>(lb_list,HttpStatus.OK);
 
@@ -103,12 +102,12 @@ public class LoginController {
     Parameter: json @RequestBody
      */
     @RequestMapping(value="/update_name",method=RequestMethod.POST)
-    public ResponseEntity update_name(@RequestBody USER user) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
-        USER user_exists = userService.findByName(user.getName());
-        USER real_user = userService.findById(user.getId());
+    public ResponseEntity update_name(@RequestBody User user) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
+        User user_exists = userService.findByName(user.getName());
+        User real_user = userService.findById(user.getId());
         if(user_exists == null)
         {
-            String_Encrypt_Decryptor encrypt_decryptor = new String_Encrypt_Decryptor(user.getPassword(),0);
+            StringEncryptDecryptor encrypt_decryptor = new StringEncryptDecryptor(user.getPassword(),0);
             String password = encrypt_decryptor.getPassphrase_enc();
             if(password.equals(real_user.getPassword())) {
                 userService.username_update(user);
@@ -131,9 +130,9 @@ public class LoginController {
     and returns the specified json message and status.
      */
     @RequestMapping(value="/update_password",method=RequestMethod.POST)
-    public ResponseEntity update_password(@RequestBody USER user) throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
-        USER user_exists = userService.findByName(user.getName());
-        //USER real_user = userService.findById(user.getId());
+    public ResponseEntity update_password(@RequestBody User user) throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
+        User user_exists = userService.findByName(user.getName());
+        //User real_user = userService.findById(user.getId());
         if(user_exists != null)
         {
                 userService.password_update(user);
@@ -153,28 +152,28 @@ public class LoginController {
     Updates the score of the player.
      */
     /*@RequestMapping(value="/update_score",method=RequestMethod.POST)
-    public ResponseEntity update_score(@RequestBody Leaderboard_All_Time leaderboard)
+    public ResponseEntity update_score(@RequestBody LeaderboardAllTime leaderboard)
     {
-        Leaderboard_Weekly leaderboard_weekly = new Leaderboard_Weekly(leaderboard.getUserId(),leaderboard.getScore(),leaderboard.getDate(),leaderboard.getUsername());
-        Leaderboard_All_Time all_time_exists = leaderboard_all_timeService.get_by_username(leaderboard.getUserId());
-        Leaderboard_Weekly weekly_exists = leaderboard_weeklyService.get_by_username(leaderboard.getUserId());
+        LeaderboardWeekly leaderboard_weekly = new LeaderboardWeekly(leaderboard.getUserId(),leaderboard.getScore(),leaderboard.getDate(),leaderboard.getUsername());
+        LeaderboardAllTime all_time_exists = leaderboard_alltimeService.get_by_username(leaderboard.getUserId());
+        LeaderboardWeekly weekly_exists = leaderboard_weeklyService.get_by_username(leaderboard.getUserId());
 
         if(all_time_exists != null && weekly_exists !=null)
         {
-            leaderboard_all_timeService.update_score(leaderboard.getUserId(),leaderboard.getScore(),leaderboard.getDate());
+            leaderboard_alltimeService.update_score(leaderboard.getUserId(),leaderboard.getScore(),leaderboard.getDate());
             leaderboard_weeklyService.update_score(leaderboard.getUserId(),leaderboard.getScore(), leaderboard.getDate());
             return ResponseEntity.status(HttpStatus.OK)
                     .body("Leaderboard(s) updated");
         }
         if(all_time_exists != null && weekly_exists == null)
         {
-            leaderboard_all_timeService.update_score(leaderboard.getUserId(),leaderboard.getScore(),leaderboard.getDate());
+            leaderboard_alltimeService.update_score(leaderboard.getUserId(),leaderboard.getScore(),leaderboard.getDate());
             leaderboard_weeklyService.save_score(leaderboard_weekly);
             return ResponseEntity.status(HttpStatus.OK)
                     .body("New Score added to weekly table and all time table updated");
         }
 
-        leaderboard_all_timeService.save_score(leaderboard);
+        leaderboard_alltimeService.save_score(leaderboard);
         leaderboard_weeklyService.save_score(leaderboard_weekly);
         return ResponseEntity.status(HttpStatus.OK)
                 .body("New Score added");
@@ -188,14 +187,14 @@ public class LoginController {
     Updates the score of the player for only all_time leaderboard.
      */
     @RequestMapping(value="/update_score_alltime",method=RequestMethod.POST)
-    public ResponseEntity update_score_alltime(@RequestBody Leaderboard_All_Time leaderboard)
+    public ResponseEntity update_score_alltime(@RequestBody LeaderboardAllTime leaderboard)
     {
-        Leaderboard_All_Time all_time_exists = leaderboard_all_timeService.get_by_username(leaderboard.getUserId());
+        LeaderboardAllTime all_time_exists = leaderboard_alltimeService.get_by_username(leaderboard.getUserId());
 
         if(all_time_exists != null)
         {
             if(leaderboard.getScore() > all_time_exists.getScore()) {
-                leaderboard_all_timeService.update_score(leaderboard.getUserId(), leaderboard.getScore(), leaderboard.getDate());
+                leaderboard_alltimeService.update_score(leaderboard.getUserId(), leaderboard.getScore(), leaderboard.getDate());
                 return ResponseEntity.status(HttpStatus.OK)
                         .body("Leaderboard(s) updated");
             }
@@ -204,7 +203,7 @@ public class LoginController {
                         .body("Leaderboard could not updated");
             }
         }
-        leaderboard_all_timeService.save_score(leaderboard);
+        leaderboard_alltimeService.save_score(leaderboard);
         return ResponseEntity.status(HttpStatus.OK)
                 .body("New Score added");
     }
@@ -216,10 +215,10 @@ public class LoginController {
     Updates the score of the player for only weekly leaderboard.
     */
     @RequestMapping(value="/update_score_weekly",method=RequestMethod.POST)
-    public ResponseEntity update_score_weekly(@RequestBody Leaderboard_All_Time leaderboard)
+    public ResponseEntity update_score_weekly(@RequestBody LeaderboardAllTime leaderboard)
     {
-        Leaderboard_Weekly leaderboard_weekly = new Leaderboard_Weekly(leaderboard.getUserId(),leaderboard.getScore(),leaderboard.getDate(),leaderboard.getUsername());
-        Leaderboard_Weekly weekly_exists = leaderboard_weeklyService.get_by_username(leaderboard.getUserId());
+        LeaderboardWeekly leaderboard_weekly = new LeaderboardWeekly(leaderboard.getUserId(),leaderboard.getScore(),leaderboard.getDate(),leaderboard.getUsername());
+        LeaderboardWeekly weekly_exists = leaderboard_weeklyService.get_by_username(leaderboard.getUserId());
 
         if(weekly_exists !=null)
         {
@@ -248,14 +247,14 @@ public class LoginController {
     if it is not ok, then it returns a null user and httpstatus bad request.
      */
     @RequestMapping(value="/sign_in",method = RequestMethod.POST)
-    public ResponseEntity<USER> sign_in(@RequestBody USER user) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
+    public ResponseEntity<User> sign_in(@RequestBody User user) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
 
 
-        //USER user_r = null;
-        USER user_exists = userService.findByName(user.getName());
+        //User user_r = null;
+        User user_exists = userService.findByName(user.getName());
         if(user_exists != null)
         {
-            String_Encrypt_Decryptor encrypt_decryptor = new String_Encrypt_Decryptor(user.getPassword(),0);
+            StringEncryptDecryptor encrypt_decryptor = new StringEncryptDecryptor(user.getPassword(),0);
             String password = encrypt_decryptor.getPassphrase_enc();
             if(password.equals(user_exists.getPassword()))
             {
@@ -276,9 +275,9 @@ public class LoginController {
     the user name is unique.
      */
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public ResponseEntity createNewUser(@RequestBody USER user) throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
+    public ResponseEntity createNewUser(@RequestBody User user) throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
 
-        USER userExists = userService.findByName(user.getName());
+        User userExists = userService.findByName(user.getName());
         if (userExists != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                  .body("There is already a user with that name");
