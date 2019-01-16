@@ -362,6 +362,15 @@ public class Engine {
                 clearAndFade(1);
             }
 
+            //CHEAT, WARNING!!!! THIS IS NOT TESTED ENOUGH
+            //DURING THE SINGLE PLAYER PART OF GAME AFTER WE PRESS "X"
+            // GAME TRIES TO START MULTIPLAYER LEVEL = 4
+            if(event.getCode() == KeyCode.X) {
+
+                gameMusic.stop();
+                clearAndFade(4);
+            }
+
         });
 
         scene.setOnKeyReleased(event -> {

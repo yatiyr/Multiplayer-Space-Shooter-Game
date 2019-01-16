@@ -57,12 +57,17 @@ public class GameValues {
     public static int BOSS_PLEKUMAT_FIRE_DURATION = 400;
 
     //Http request url's
-    public static String UPDATE_WEEKLY_TABLE_REQUEST_URL = "http://localhost:8080/update_score_weekly";
-    public static String UPDATE_ALL_TIME_TABLE_REQUEST_URL = "http://localhost:8080/update_score_alltime";
-    public static String REGISTRATION_URL = "http://localhost:8080/registration";
-    public static String WEEKLY_LEADERBOARD_REQUEST_URL = "http://localhost:8080/get_weekly_leaderboard";
-    public static String ALL_TIME_LEADERBOARD_REQUEST_URL = "http://localhost:8080/get_all_time_leaderboard";
-    public static String SIGN_IN_REQUEST_URL = "http://localhost:8080/sign_in";
+
+    //BASE_HOST can be changed during evauation. First commented address is for evaluation, second address is for local testing
+
+    public static String BASE_HOST = "http://144.122.71.144:8080/"; //"http://144.122.71.144:8080/" for evaluation ,  "http://localhost:8080/" for local testing
+
+    public static String UPDATE_WEEKLY_TABLE_REQUEST_URL = BASE_HOST + "update_score_weekly";
+    public static String UPDATE_ALL_TIME_TABLE_REQUEST_URL = BASE_HOST + "update_score_alltime";
+    public static String REGISTRATION_URL = BASE_HOST + "registration";
+    public static String WEEKLY_LEADERBOARD_REQUEST_URL = BASE_HOST + "get_weekly_leaderboard";
+    public static String ALL_TIME_LEADERBOARD_REQUEST_URL = BASE_HOST + "get_all_time_leaderboard";
+    public static String SIGN_IN_REQUEST_URL = BASE_HOST + "sign_in";
 
 
     //Properties of game Over Text in game Over window
